@@ -10,7 +10,9 @@ These files have been tested and used to generate a live ELK deployment on Azure
 
 You may want to retrieve all of ansible playbooks but using the following commands:
 >  `curl -L -O https://github.com/TachyonTheHackyon/speedy-particles/blob/main/Ansible/elkdeployment.yml >> /etc/ansible/roles/elkdeployment.yml`
+
 >  `curl -L -O https://github.com/TachyonTheHackyon/speedy-particles/blob/main/Ansible/filebeat-config.yml >> /etc/ansible/roles/elkdeployment.yml`
+
 >  `curl -L -O https://github.com/TachyonTheHackyon/speedy-particles/blob/main/Ansible/metricbeat-config.yml >> /etc/ansible/files/metricbeat-config.yml`
 
 This document contains the following details:
