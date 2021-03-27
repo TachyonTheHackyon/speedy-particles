@@ -2,7 +2,7 @@
 
 The files in this repository were used to configure the network depicted below.
 
- (Images/diagram_filename.png)
+ ![diagramfile](Images/Webservers.png)
 
 These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the elkdeployment.yml file may be used to install only certain pieces of it, such as Filebeat.
 
@@ -42,7 +42,7 @@ The configuration details of each machine may be found below.
 The machines on the internal network are not exposed to the public Internet. 
 
 Only the load balancer machine can accept connections from the Internet. Access to this machine is only allowed from the following IP addresses:
-- Localhost IP
+- `Localhost IP`
 
 Machines within the network can only be accessed by the Jump Box via SSH on port 22.
 
@@ -90,13 +90,11 @@ In order to use the playbook, you will need to have an Ansible control node alre
 
 SSH into the control node and follow the steps below:
 - Copy the YML file to /etc/ansible/roles (if you do not have this folder please make it).
-- Update the hosts file to include a section for [webservers] with each of their individual ip followed by ansible_python_interpreter=/usr/bin/python3 as well as an [elk] section with the elk server IP and ansible_python_interpreter=/usr/bin/python3
-- Make sure to adjust the filebeat-config.yml to such that line 1106 reads 'hosts: ["elkseverIP:9200"]' and line 1805 reads 'host: "elkserverIP:5601". Do the same for metricbeat-config.yml
-- Run the playbook, and navigate to http://elkseverip:5601/app/kibana to check that the installation worked as expected.
-
-_TODO: Answer the following questions to fill in the blanks:_
-- _Which file is the playbook? Where do you copy it?_
-- _Which file do you update to make Ansible run the playbook on a specific machine? How do I specify which machine to install the ELK server on versus which to install Filebeat on?_
-- _Which URL do you navigate to in order to check that the ELK server is running?
-
-_As a **Bonus**, provide the specific commands the user will need to run to download the playbook, update the files, etc._
+- Update the hosts file to include a section for [webservers] with each of their individual ip followed by `ansible_python_interpreter=/usr/bin/python3` 
+- Include in the hosts file a section labeled [elk] with the elk server IP and `ansible_python_interpreter=/usr/bin/python3`
+- Make sure to adjust the filebeat-config.yml such that line 1106
+		hosts: ["elkseverIP:9200"] 
+and line 1805 reads 
+		'host: "elkserverIP:5601".
+- Do the same for metricbeat-config.yml
+- Run the playbook, and navigate to http://`ElkServerIp`:5601/app/kibana to check that the installation worked as expected.

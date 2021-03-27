@@ -1,0 +1,144 @@
+---
+- name: Config Web VM with Docker
+  hosts: webservers
+  become: true
+  tasks:
+  - name: docker.io
+    apt:
+      update_cache: yes
+      name: docker.io
+      state: present
+
+  - name: Install pip3
+    apt:
+      force_apt_get: yes
+      name: python3-pip
+      state: present
+
+  - name: Install Python Docker module
+    pip:
+      name: docker
+      state: present
+
+  - name: download and launch a docker web container
+    docker_container:
+      name: dvwa
+      image: cyberxsecurity/dvwa
+      state: started
+      restart_policy: always
+      published_ports: 80:80
+
+  - name: Enable docker service
+    systemd:
+      name: docker
+      enabled: yes
+
+- name: Install Filebeat and Copies Configs
+  hosts: webservers
+  become: true
+  tasks:
+  - name: download filebeat deb
+    command: curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.4.0-amd64.deb
+
+  - name: install filebeat deb
+    command: dpkg -i filebeat-7.4.0-amd64.deb
+
+  - name: Config Filebeat
+    copy:
+      src: /etc/ansible/files/filebeat-config.yml
+      dest: /etc/filebeat/filebeat.yml
+
+  - name: Enable Filebeat Module
+    command: filebeat modules enable system
+
+  - name: Setup Filebeat
+    command: filebeat setup
+
+  - name: Start Filebeat
+    command: service filebeat start
+
+  - name: Reset Setting
+    systemd:
+      name: filebeat
+      enabled: yes
+
+- name: Install Metricbeat and Copies Configs
+  hosts: webservers
+  become: true
+  tasks:
+  - name: download Metric deb
+    command: curl -L -O https://artifacts.elastic.co/downloads/beats/metricbeat/metricbeat-7.6.1-amd64.deb
+
+  - name: install Metricbeat deb
+    command: dpkg -i metricbeat-7.6.1-amd64.deb
+
+  - name: Copying Metricbeat Config
+    copy:
+      src: /etc/ansible/files/metricbeat-config.yml
+      dest: /etc/metricbeat/metricbeat.yml
+
+  - name: Enable Metricbeat Module
+    command: metricbeat modules enable docker
+
+  - name: Setup Metricbeat
+    command: metricbeat setup
+
+  - name: Start Metricbeat
+    command: service metricbeat start
+
+  - name: Restart Setting
+    systemd:
+      name: metricbeat
+      enabled: yes
+
+#Elk server install and set up
+- name: Config and install Elk
+  hosts: elk
+  remote_user: azadmin
+  become: true
+  tasks:
+  - name: docker.io
+    apt:
+      force_apt_get: yes
+      update_cache: yes
+      name: docker.io
+      state: present
+
+  - name: Install pip3
+    apt:
+      force_apt_get: yes
+      name: python3-pip
+      state: present
+
+  - name: Install Python Docker module
+    pip:
+      name: docker
+      state: present
+
+     # Use command module
+  - name: Increase virtual memory
+    command: sysctl -w vm.max_map_count=262144
+
+    # Use sysctl module
+  - name: Use more memory
+    sysctl:
+      name: vm.max_map_count
+      value: "262144"
+      state: present
+      reload: yes
+
+  - name: download and launch elk container
+    docker_container:
+      name: elk
+      image: sebp/elk:761
+      state: started
+      restart_policy: always
+      published_ports:
+        - 5601:5601
+        - 9200:9200
+        - 5044:5044
+
+  - name: Always On Docker
+    systemd:
+      name: docker
+      enabled: yes
