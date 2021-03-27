@@ -6,7 +6,12 @@ The files in this repository were used to configure the network depicted below.
 
 These files have been tested and used to generate a live ELK deployment on Azure. They can be used to either recreate the entire deployment pictured above. Alternatively, select portions of the elkdeployment.yml file may be used to install only certain pieces of it, such as Filebeat.
 
-  - _TODO: Enter the playbook file._
+  [Elk Deployment Playbook](Ansible/elkdeployment.yml)
+
+You may want to retrieve all of ansible playbooks but using the following commands:
+  `curl -L -O https://github.com/TachyonTheHackyon/speedy-particles/blob/main/Ansible/elkdeployment.yml >> /etc/ansible/roles/elkdeployment.yml`
+  `curl -L -O https://github.com/TachyonTheHackyon/speedy-particles/blob/main/Ansible/filebeat-config.yml >> /etc/ansible/roles/elkdeployment.yml`
+  `curl -L -O https://github.com/TachyonTheHackyon/speedy-particles/blob/main/Ansible/metricbeat-config.yml >> /etc/ansible/files/metricbeat-config.yml`
 
 This document contains the following details:
 - Description of the Topology
@@ -63,9 +68,11 @@ Ansible was used to automate configuration of the ELK machine. No configuration 
 - Configurations can be completed for multiple machines instantaneously, and easily updated.
 
 The elk installation playbook implements the following tasks:
-- Download and isntall docker image, python-pip3_
-- Increase virtual memory via vm.max_map_count
-- Download/launch elk container and open ports 5601, 9200, 5044
+- Download and install DVWA onto webservers
+- Download and install docker images, python-pip3_
+- Increase virtual memory via vm.max_map_count on ELK server
+- Download/launch ELK container and open ports 5601, 9200, 5044
+- Download and install Filebeat, Metricbeat onto webservers
 
 The following screenshot displays the result of running `docker ps` after successfully configuring the ELK instance.
 
@@ -73,13 +80,13 @@ The following screenshot displays the result of running `docker ps` after succes
 
 ### Target Machines & Beats
 This ELK server is configured to monitor the following machines:
-- 10.0.0.5
-- 10.0.0.6
-- 10.0.0.8
+- Web 1 (10.0.0.5)
+- Web 2 (10.0.0.6)
+- Web 3 (10.0.0.8)
 
 We have installed the following Beats on these machines:
-- filebeat
-- metricbeat
+- Filebeat
+- Metricbeat
 
 These Beats allow us to collect the following information from each machine:
 - Filebeat: Filebeat collects data on system logs within the target system and relays any changes to the ELK stack
@@ -93,8 +100,8 @@ SSH into the control node and follow the steps below:
 - Update the hosts file to include a section for [webservers] with each of their individual ip followed by `ansible_python_interpreter=/usr/bin/python3` 
 - Include in the hosts file a section labeled [elk] with the elk server IP and `ansible_python_interpreter=/usr/bin/python3`
 - Make sure to adjust the filebeat-config.yml such that line 1106
-		hosts: ["elkseverIP:9200"] 
-and line 1805 reads 
-		'host: "elkserverIP:5601".
+		`hosts: ["elkseverIP:9200"]` 
+- Make sure line 1805 reads: 
+		`host: "elkserverIP:5601"`
 - Do the same for metricbeat-config.yml
 - Run the playbook, and navigate to http://`ElkServerIp`:5601/app/kibana to check that the installation worked as expected.
